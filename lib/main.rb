@@ -39,6 +39,8 @@ dist = g.degree_distribution
 dist.map! {|a| a.map{|v| Math.log(v)} }
 yp, xp = dist.transpose
 
+Dir.mkdir "../data" unless (File.directory? "../data")
+
 Plotter.plot("Log-log count, degree","log deg","log count",xp,yp,"../data/dist.png",plot_type="points")
 
 File.open("../data/out.txt", "w") do |f|
