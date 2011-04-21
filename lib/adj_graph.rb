@@ -1,6 +1,6 @@
 require_relative 'node'
 require_relative 'disjoint_set'
-require_relative 'tarjan'
+#require_relative 'tarjan'
 include Flib2
 
 module Flib2
@@ -13,7 +13,6 @@ module Flib2
       @nodelist = {}
       @nodelist_a = []
       @edge_count = 0
-      @tarjan = Tarjan.new
       @disjoint = DisjointSet.new
     end
     
@@ -40,6 +39,7 @@ module Flib2
     
     # Add an edge between n1 and n2
     def link_nodes(n1,n2)
+      # TODO Check that n1, n2 already in list of nodes
       if n1.link_to n2
         @edge_count += 1
       end
@@ -58,6 +58,20 @@ module Flib2
         @nodelist.each { |k,v| yield k,v }
       else
         raise ArgumentException, "No Block Given"
+      end
+    end
+    
+    def random_node_weighted_by(param = :degree)
+      case param
+      when :degree
+        #t = @nodelist_a.inject(0.0) { |t,n| t + n.degree } # Get total
+        t = @edge_count * 2
+        r = rand * t
+        @nodelist_a.each do |n|
+          return n if n.degree >= r
+          r -= n.degree
+        end
+        random_node
       end
     end
     
@@ -136,3 +150,11 @@ module Flib2
   end
   
 end
+
+d = AdjGraph.new
+n = d.add_nodes(5)
+d.link_nodes(n[0],n[1])
+d.link_nodes(n[2],n[1])
+d.link_nodes(n[3],n[1])
+d.link_nodes(n[4],n[1])
+puts d.random_node_weighted_by(:degree)
